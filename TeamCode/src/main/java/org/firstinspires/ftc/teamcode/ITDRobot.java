@@ -67,32 +67,17 @@ public class ITDRobot {
         // Set up extension arm motor
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set up main servo motors
         leftBarServo.setPosition(0.0);
         rightBarServo.setPosition(0.0);
-
-        // Set up roll wheel motor
-        rollWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rollWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        rollWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Fly shoot servo motor
-        flyShoot.setPosition(1.0);
-
-        // Hang roller motor
-        hangRoller.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangRoller.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        hangRoller.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        extensionServo.setPosition(0.0);
+        clawServo.setPosition(0.0);
 
         // Set up the IMU (gyro/angle sensor)
         IMU.Parameters imuParameters = new IMU.Parameters(
