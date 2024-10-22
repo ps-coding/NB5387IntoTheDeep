@@ -9,14 +9,21 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class ITDRobot {
-    private DcMotor flDrive;
-    private DcMotor frDrive;
-    private DcMotor blDrive;
-    private DcMotor brDrive;
+    public double flDrivePower;
+    public double frDrivePower;
+    public double brDrivePower;
+    public double blDrivePower;
+    public double SLOWDOWN = 4;
+    public DcMotor flDrive;
+    public DcMotor frDrive;
+    public DcMotor blDrive;
+    public DcMotor brDrive;
 
+    public double linearSlidePower;
     public DcMotor leftLinearSlide;
     public DcMotor rightLinearSlide;
 
@@ -29,55 +36,52 @@ public class ITDRobot {
     private final ElapsedTime extensionDebounce = new ElapsedTime();
     public Servo extensionServo;
 
-    public boolean clawOpen;
+    public boolean clawClosed;
     private final ElapsedTime clawDebounce = new ElapsedTime();
     public Servo clawServo;
 
     public IMU imu;
 
-    public double flDrivePower;
-    public double frDrivePower;
-    public double brDrivePower;
-    public double blDrivePower;
-    public double extensionArmPower;
+    public Telemetry telemetry;
+
+    public ITDRobot(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 
     public void init(final HardwareMap hardwareMap) {
         // Initialize hardware map
-        flDrive = hardwareMap.get(DcMotor.class, "flDrive");
-        frDrive = hardwareMap.get(DcMotor.class, "frDrive");
-        blDrive = hardwareMap.get(DcMotor.class, "blDrive");
-        brDrive = hardwareMap.get(DcMotor.class, "brDrive");
+//        flDrive = hardwareMap.get(DcMotor.class, "flDrive");
+//        frDrive = hardwareMap.get(DcMotor.class, "frDrive");
+//        blDrive = hardwareMap.get(DcMotor.class, "blDrive");
+//        brDrive = hardwareMap.get(DcMotor.class, "brDrive");
+//
+//        leftLinearSlide = hardwareMap.get(DcMotor.class, "leftLinearSlide");
+//        rightLinearSlide = hardwareMap.get(DcMotor.class, "rightLinearSlide");
 
-        leftLinearSlide = hardwareMap.get(DcMotor.class, "leftLinearSlide");
-        rightLinearSlide = hardwareMap.get(DcMotor.class, "rightLinearSlide");
         leftBarServo = hardwareMap.get(Servo.class, "leftBarServo");
         rightBarServo = hardwareMap.get(Servo.class, "rightBarServo");
         extensionServo = hardwareMap.get(Servo.class, "extensionServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
-        // Set up drive motors
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // Set up motors
+//        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        flDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        blDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        brDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        flDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        blDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        brDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Set up extension arm motor
-        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Set up main servo motors
-        leftBarServo.setPosition(0.0);
-        rightBarServo.setPosition(0.0);
-        extensionServo.setPosition(0.0);
-        clawServo.setPosition(0.0);
+        // Update state
+        be();
 
         // Set up the IMU (gyro/angle sensor)
         IMU.Parameters imuParameters = new IMU.Parameters(
@@ -88,100 +92,107 @@ public class ITDRobot {
         );
         imu = hardwareMap.get(BHI260IMU.class, "imu");
         imu.initialize(imuParameters);
+
+        // Explain state
+        what();
+    }
+
+    public void be() {
+//        flDrive.setPower(flDrivePower / SLOWDOWN);
+//        frDrive.setPower(frDrivePower / SLOWDOWN);
+//        blDrive.setPower(blDrivePower / SLOWDOWN);
+//        brDrive.setPower(brDrivePower / SLOWDOWN);
+//
+//        leftLinearSlide.setPower(linearSlidePower);
+//        rightLinearSlide.setPower(linearSlidePower);
+
+        if (barUp) {
+            leftBarServo.setPosition(0.0);
+            rightBarServo.setPosition(1.0);
+        } else {
+            leftBarServo.setPosition(1.0);
+            rightBarServo.setPosition(0.0);
+        }
+
+        if (extensionOut) {
+            extensionServo.setPosition(1.0);
+        } else {
+            extensionServo.setPosition(0.1);
+        }
+
+        if (clawClosed) {
+            clawServo.setPosition(0.9);
+        } else {
+            clawServo.setPosition(0.3);
+        }
+    }
+
+    public void what() {
+//        telemetry.addData("FL Power: ", flDrivePower);
+//        telemetry.addData("FR Power: ", frDrivePower);
+//        telemetry.addData("BL Power: ", blDrivePower);
+//        telemetry.addData("BR Power: ", brDrivePower);
+        telemetry.addData("Angle: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("Linear Slide Power: ", linearSlidePower);
+        telemetry.addData("Bar Up? ", barUp);
+        telemetry.addData("Extension Out? ", extensionOut);
+        telemetry.addData("Claw Closed?", clawClosed);
+
+        telemetry.update();
     }
 
     public void gamePadPower(Gamepad gp1, Gamepad gp2) {
-        // Core functionality
-        mainDrive(gp1);
-
         // Plugins
-        extensionArmControl(gp2);
-        mainArmToggle(gp2);
-        boxDoorToggle(gp2);
-        rollControl(gp2);
-        fly(gp1);
-        hang(gp2);
+        mainDrive(gp1);
+        linearSlideControl(gp2);
+        barToggle(gp2);
+        extensionToggle(gp2);
+        clawToggle(gp2);
+
+        // Update state
+        be();
+
+        // Explain state
+        what();
     }
 
-    public void mainDrive(Gamepad gp1) {
-        double multiplier = Math.max(0.3, 1 - gp1.right_trigger);
-
-        final double drive = (-gp1.left_stick_y);
-        final double turn = (gp1.right_stick_x);
-        final double strafe = (gp1.left_stick_x);
+    public void mainDrive(Gamepad gp) {
+        final double drive = (-gp.left_stick_y);
+        final double turn = (gp.right_stick_x);
+        final double strafe = (gp.left_stick_x);
 
         flDrivePower = (drive + strafe + turn);
         frDrivePower = (drive - strafe - turn);
         blDrivePower = (drive - strafe + turn);
         brDrivePower = (drive + strafe - turn);
-
-        final double SLOWDOWN = 4.0;
-
-        flDrive.setPower(flDrivePower * multiplier / SLOWDOWN);
-        frDrive.setPower(frDrivePower * multiplier / SLOWDOWN);
-        blDrive.setPower(blDrivePower * multiplier / SLOWDOWN);
-        brDrive.setPower(brDrivePower * multiplier / SLOWDOWN);
     }
 
-    public void extensionArmControl(Gamepad gp2) {
-        extensionArmPower = Math.abs(gp2.left_stick_y);
-        leftLinearSlide.setPower(extensionArmPower);
+    public void linearSlideControl(Gamepad gp) {
+        linearSlidePower = Math.abs(gp.left_stick_y);
     }
 
-    public void mainArmToggle(Gamepad gp2) {
-        if (gp2.x && barDebounce.milliseconds() > 300) {
+    public void barToggle(Gamepad gp) {
+        if (gp.x && barDebounce.milliseconds() > 300) {
             barDebounce.reset();
 
             barUp = !barUp;
-
-            if (barUp) {
-                leftBarServo.setPosition(0.5);
-            } else {
-                doorOpen = true;
-                boxDoor.setPosition(0.3);
-                leftBarServo.setPosition(0.0);
-            }
         }
     }
 
-    public void boxDoorToggle(Gamepad gp2) {
-        if (gp2.a && doorDebounce.milliseconds() > 300) {
-            doorDebounce.reset();
+    public void extensionToggle(Gamepad gp) {
+        if (gp.a && extensionDebounce.milliseconds() > 300) {
+            extensionDebounce.reset();
 
-            doorOpen = !doorOpen;
-
-            if (doorOpen) {
-                if (barUp)
-                    boxDoor.setPosition(0.1);
-                else
-                    boxDoor.setPosition(0.3);
-            } else {
-                boxDoor.setPosition(1.0);
-            }
+            extensionOut = !extensionOut;
         }
     }
 
-    public void rollControl(Gamepad gp2) {
-        if (Math.abs(gp2.right_stick_y) > 0.6) {
-            rollWheel.setPower(1.0);
-        } else if (Math.abs(gp2.right_stick_y) > 0.1) {
-            rollWheel.setPower(0.5);
-        } else {
-            rollWheel.setPower(0.0);
+    public void clawToggle(Gamepad gp) {
+        if (gp.b && clawDebounce.milliseconds() > 300) {
+            clawDebounce.reset();
+
+            clawClosed = !clawClosed;
         }
-    }
-
-    public void fly(Gamepad gp1) {
-        if (gp1.y && !flyFlew) {
-            flyFlew = true;
-
-            flyShoot.setPosition(0.0);
-        }
-    }
-
-    public void hang(Gamepad gp2) {
-        double power = gp2.left_trigger - gp2.right_trigger;
-        hangRoller.setPower(power);
     }
 
     public void turn(double target) {
