@@ -59,7 +59,7 @@ public class ITDRobot {
 //        rightLinearSlide = hardwareMap.get(DcMotor.class, "rightLinearSlide");
 
         leftBarServo = hardwareMap.get(Servo.class, "leftBarServo");
-        rightBarServo = hardwareMap.get(Servo.class, "rightBarServo");
+//        rightBarServo = hardwareMap.get(Servo.class, "rightBarServo");
         extensionServo = hardwareMap.get(Servo.class, "extensionServo");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
 
@@ -108,22 +108,22 @@ public class ITDRobot {
 
         if (barUp) {
             leftBarServo.setPosition(0.0);
-            rightBarServo.setPosition(1.0);
+//            rightBarServo.setPosition(1.0);
         } else {
             leftBarServo.setPosition(1.0);
-            rightBarServo.setPosition(0.0);
+//            rightBarServo.setPosition(0.0);
         }
 
         if (extensionOut) {
-            extensionServo.setPosition(1.0);
+            extensionServo.setPosition(0.4);
         } else {
-            extensionServo.setPosition(0.1);
+            extensionServo.setPosition(1.0);
         }
 
         if (clawClosed) {
-            clawServo.setPosition(0.9);
+            clawServo.setPosition(1.0);
         } else {
-            clawServo.setPosition(0.3);
+            clawServo.setPosition(0.6);
         }
     }
 
