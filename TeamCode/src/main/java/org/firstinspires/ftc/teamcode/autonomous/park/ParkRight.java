@@ -1,21 +1,21 @@
-package org.firstinspires.ftc.teamcode.autonomous.place;
+package org.firstinspires.ftc.teamcode.autonomous.park;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ITDRobot;
 
-@Autonomous(name = "PlaceFL", group = "Place")
-public class PlaceFL extends LinearOpMode {
+@Autonomous(name = "ParkRight", group = "Park")
+public class ParkRight extends LinearOpMode {
     ITDRobot robot = new ITDRobot(telemetry);
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot.init(hardwareMap);
 
         waitForStart();
 
-        robot.tinyStrafe(1);
-        robot.driveToInches(46);
+        robot.driveToInches(5);
+        robot.tinyStrafe(20);
     }
 }

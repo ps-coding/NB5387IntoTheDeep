@@ -31,16 +31,17 @@ public class ITDRobot {
     public DcMotor rightLinearSlide;
 
     public boolean barUp;
-    private ElapsedTime barDebounce = new ElapsedTime();
+    private final ElapsedTime barDebounce = new ElapsedTime();
     public Servo leftBarServo;
     public Servo rightBarServo;
 
+    private boolean justInitedExtension = true;
     public boolean extensionUp;
-    private ElapsedTime extensionDebounce = new ElapsedTime();
+    private final ElapsedTime extensionDebounce = new ElapsedTime();
     public Servo extensionServo;
 
-    public boolean clawClosed;
-    private ElapsedTime clawDebounce = new ElapsedTime();
+    public boolean clawOpen;
+    private final ElapsedTime clawDebounce = new ElapsedTime();
     public Servo clawServo;
 
     public IMU imu;
@@ -58,8 +59,8 @@ public class ITDRobot {
         blDrive = hardwareMap.get(DcMotor.class, "blDrive");
         brDrive = hardwareMap.get(DcMotor.class, "brDrive");
 
-        leftLinearSlide = hardwareMap.get(DcMotor.class, "leftLinearSlide");
-        rightLinearSlide = hardwareMap.get(DcMotor.class, "rightLinearSlide");
+//        leftLinearSlide = hardwareMap.get(DcMotor.class, "leftLinearSlide");
+//        rightLinearSlide = hardwareMap.get(DcMotor.class, "rightLinearSlide");
 
         leftBarServo = hardwareMap.get(Servo.class, "leftBarServo");
         rightBarServo = hardwareMap.get(Servo.class, "rightBarServo");
@@ -75,19 +76,16 @@ public class ITDRobot {
         blDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         brDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        leftLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        rightLinearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         flDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         blDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        // Init state
-        be();
 
         // Set up the IMU (gyro/angle sensor)
         IMU.Parameters imuParameters = new IMU.Parameters(
@@ -99,8 +97,23 @@ public class ITDRobot {
         imu = hardwareMap.get(BHI260IMU.class, "imu");
         imu.initialize(imuParameters);
 
-        // Explain state
+        // Init state
+        brake();
+//        leftLinearSlide.setPower(0.0);
+//        rightLinearSlide.setPower(0.0);
+        leftBarServo.setPosition(1.0);
+        rightBarServo.setPosition(0.0);
+        extensionServo.setPosition(1.0);
+        clawServo.setPosition(0.0);
+
+        // Init telemetry
         what();
+    }
+
+    public void be(int updateDelay) {
+        be();
+
+        try {Thread.sleep(updateDelay);} catch (InterruptedException ignored) {}
     }
 
     public void be() {
@@ -109,32 +122,37 @@ public class ITDRobot {
         blDrive.setPower(blDrivePower / driveSlowdown);
         brDrive.setPower(brDrivePower / driveSlowdown);
 
-        if (linearSlidePower >= 0) {
-            leftLinearSlide.setPower(linearSlidePower / BUILD_ERROR_FACTOR_UP);
-            rightLinearSlide.setPower(linearSlidePower);
-        } else {
-            leftLinearSlide.setPower(linearSlidePower / BUILD_ERROR_FACTOR_DOWN);
-            rightLinearSlide.setPower(linearSlidePower);
-        }
+//        if (linearSlidePower >= 0) {
+//            leftLinearSlide.setPower(linearSlidePower / BUILD_ERROR_FACTOR_UP);
+//            rightLinearSlide.setPower(linearSlidePower);
+//        } else {
+//            leftLinearSlide.setPower(linearSlidePower / BUILD_ERROR_FACTOR_DOWN);
+//            rightLinearSlide.setPower(linearSlidePower);
+//        }
 
         if (barUp) {
-            leftBarServo.setPosition(0.3);
-            rightBarServo.setPosition(0.7);
+            leftBarServo.setPosition(0.2);
+            rightBarServo.setPosition(0.8);
         } else {
-            leftBarServo.setPosition(1.0);
-            rightBarServo.setPosition(0.0);
+            leftBarServo.setPosition(0.603);
+            rightBarServo.setPosition(0.397);
         }
 
         if (extensionUp) {
-            extensionServo.setPosition(0.3);
+            justInitedExtension = false;
+            extensionServo.setPosition(0.0);
         } else {
-            extensionServo.setPosition(0.1);
+            if (!justInitedExtension) {
+                extensionServo.setPosition(1.0);
+            } else {
+                extensionServo.setPosition(0.8);
+            }
         }
 
-        if (clawClosed) {
+        if (clawOpen) {
             clawServo.setPosition(1.0);
         } else {
-            clawServo.setPosition(0.6);
+            clawServo.setPosition(0.0);
         }
     }
 
@@ -148,7 +166,7 @@ public class ITDRobot {
         telemetry.addData("Linear Slide Power: ", linearSlidePower);
         telemetry.addData("Bar Up? ", barUp);
         telemetry.addData("Extension Out? ", extensionUp);
-        telemetry.addData("Claw Closed? ", clawClosed);
+        telemetry.addData("Claw Closed? ", clawOpen);
 
         telemetry.update();
     }
@@ -164,7 +182,7 @@ public class ITDRobot {
         // Update state
         be();
 
-        // Explain state
+        // Update telemetry
         what();
     }
 
@@ -172,14 +190,17 @@ public class ITDRobot {
         double drive = -gp.left_stick_y;
         double turn = gp.right_stick_x;
         double strafe = -gp.left_stick_x;
+        double slowDownFactor = gp.right_trigger;
+        double speedUpFactor = gp.left_trigger;
 
+        mainDrive(drive, turn, strafe, slowDownFactor, speedUpFactor);
+    }
+
+    public void mainDrive(double drive, double turn, double strafe, double slowDownFactor, double speedUpFactor) {
         flDrivePower = drive - strafe + turn;
         frDrivePower = drive - strafe - turn;
         blDrivePower = drive + strafe + turn;
         brDrivePower = drive + strafe - turn;
-
-        double slowDownFactor = gp.right_trigger;
-        double speedUpFactor = gp.left_trigger;
 
         if (slowDownFactor > 0.5 && speedUpFactor > 0.5) {
             driveSlowdown = 2;
@@ -193,59 +214,48 @@ public class ITDRobot {
     }
 
     public void linearSlideControl(Gamepad gp) {
-        linearSlidePower = gp.left_stick_y;
+        double power = gp.left_stick_y;
+        linearSlideControl(power);
+    }
+
+    public void linearSlideControl(double power) {
+        linearSlidePower = power;
     }
 
     public void barToggle(Gamepad gp) {
         if (gp.x && barDebounce.milliseconds() > 300) {
             barDebounce.reset();
 
-            barUp = !barUp;
+            barToggle();
         }
+    }
+
+    public void barToggle() {
+        barUp = !barUp;
     }
 
     public void extensionToggle(Gamepad gp) {
         if (gp.a && extensionDebounce.milliseconds() > 300) {
             extensionDebounce.reset();
 
-            extensionUp = !extensionUp;
+            extensionToggle();
         }
+    }
+
+    public void extensionToggle() {
+        extensionUp = !extensionUp;
     }
 
     public void clawToggle(Gamepad gp) {
-        if (gp.b && clawDebounce.milliseconds() > 300) {
+        if (gp.y && clawDebounce.milliseconds() > 300) {
             clawDebounce.reset();
 
-            clawClosed = !clawClosed;
+            clawToggle();
         }
     }
 
-    public void linearSlideUp() {
-        final int DELAY = 1400;
-
-        linearSlidePower = 0.8;
-
-        be();
-
-        try {Thread.sleep(DELAY);} catch (InterruptedException e) {}
-
-        linearSlidePower = 0.0;
-
-        be();
-    }
-
-    public void linearSlideDown() {
-        final int DELAY = 1400;
-
-        linearSlidePower = -0.4;
-
-        be();
-
-        try {Thread.sleep(DELAY);} catch (InterruptedException e) {}
-
-        linearSlidePower = 0.0;
-
-        be();
+    public void clawToggle() {
+        clawOpen = !clawOpen;
     }
 
     public void turn(double target) {
@@ -263,7 +273,7 @@ public class ITDRobot {
 
         final int DELAY = 50;
 
-        while (Math.abs(error) > 2) {
+        while (Math.abs(error) > 3) {
             currentPosition = this.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             error = target - currentPosition;
 
@@ -281,15 +291,15 @@ public class ITDRobot {
             blDrive.setPower(blDrivePower / 3);
             brDrive.setPower(brDrivePower / 3);
 
-            try {Thread.sleep(DELAY);} catch (InterruptedException e) {}
+            try {Thread.sleep(DELAY);} catch (InterruptedException ignored) {}
         }
 
-        stop();
+        brake();
 
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        try {Thread.sleep(500);} catch (InterruptedException e) {}
+        try {Thread.sleep(500);} catch (InterruptedException ignored) {}
     }
 
     public void driveToInches(double inches) {
@@ -322,71 +332,70 @@ public class ITDRobot {
             blDrive.setPower(blDrivePower / 3);
             brDrive.setPower(brDrivePower / 3);
 
-            try { Thread.sleep(delay); } catch (InterruptedException e) {}
+            try { Thread.sleep(delay); } catch (InterruptedException ignored) {}
         }
 
-        stop();
+        brake();
 
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double currentPosition = this.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-        double error = 0 - currentPosition;
+////        double currentPosition = this.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+////        double error = 0 - currentPosition;
+////
+////        double kp = 0.5;
+////
+////        final int DELAY = 50;
+////
+////        while (Math.abs(error) > 2) {
+////            currentPosition = this.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+////            error = 0 - currentPosition;
+////
+////            double proportional = error * kp;
+////
+////            double turn = proportional / (180 * kp);
+////
+////            flDrivePower = -turn;
+////            frDrivePower = turn;
+////            blDrivePower = -turn;
+////            brDrivePower = turn;
+////
+////            flDrive.setPower(flDrivePower / 3);
+////            frDrive.setPower(frDrivePower / 3);
+////            blDrive.setPower(blDrivePower / 3);
+////            brDrive.setPower(brDrivePower / 3);
+////
+////            try {Thread.sleep(DELAY);} catch (InterruptedException ignored) {}
+////        }
+////
+////        brake();
+//
+//        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double kp = 0.5;
-
-        final int DELAY = 50;
-
-        while (Math.abs(error) > 2) {
-            currentPosition = this.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-            error = 0 - currentPosition;
-
-            double proportional = error * kp;
-
-            double turn = proportional / (180 * kp);
-
-            flDrivePower = -turn;
-            frDrivePower = turn;
-            blDrivePower = -turn;
-            brDrivePower = turn;
-
-            flDrive.setPower(flDrivePower / 3);
-            frDrive.setPower(frDrivePower / 3);
-            blDrive.setPower(blDrivePower / 3);
-            brDrive.setPower(brDrivePower / 3);
-
-            try {Thread.sleep(DELAY);} catch (InterruptedException e) {}
-        }
-
-        stop();
-
-        setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        try {Thread.sleep(500);} catch (InterruptedException e) {}
+        try {Thread.sleep(500);} catch (InterruptedException ignored) {}
     }
 
     public void tinyStrafe(double amount) {
         strafe((int) (amount * 48));
     }
 
-    public void strafe(int pos) {
+    public void strafe(int frontPos) {
         setDriveMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        int flBrPos = pos;
-        int frBlPos = -pos;
+        int backPos = -frontPos;
 
-        while (Math.abs(flBrPos - brDrive.getCurrentPosition()) > 10 || Math.abs(flBrPos - flDrive.getCurrentPosition()) > 10) {
-            int flDistance = flBrPos - flDrive.getCurrentPosition();
-            int frDistance = frBlPos - frDrive.getCurrentPosition();
-            int blDistance = frBlPos - blDrive.getCurrentPosition();
-            int brDistance = flBrPos - brDrive.getCurrentPosition();
+        while (Math.abs(frontPos - brDrive.getCurrentPosition()) > 15 || Math.abs(frontPos - flDrive.getCurrentPosition()) > 15) {
+            int flDistance = frontPos - flDrive.getCurrentPosition();
+            int frDistance = frontPos - frDrive.getCurrentPosition();
+            int blDistance = backPos - blDrive.getCurrentPosition();
+            int brDistance = backPos - brDrive.getCurrentPosition();
 
-            flDrivePower = (double)flDistance / (double)Math.abs(flBrPos);
-            blDrivePower = (double)blDistance / (double)Math.abs(frBlPos);
-            frDrivePower = (double)frDistance / (double)Math.abs(frBlPos);
-            brDrivePower = (double)brDistance / (double)Math.abs(flBrPos);
+            flDrivePower = (double)flDistance / (double)Math.abs(frontPos);
+            blDrivePower = (double)blDistance / (double)Math.abs(frontPos);
+            frDrivePower = (double)frDistance / (double)Math.abs(backPos);
+            brDrivePower = (double)brDistance / (double)Math.abs(backPos);
 
             flDrive.setPower(flDrivePower / 5);
             frDrive.setPower(frDrivePower / 5);
@@ -394,9 +403,9 @@ public class ITDRobot {
             brDrive.setPower(brDrivePower / 5);
         }
 
-        stop();
+        brake();
 
-        try {Thread.sleep(500);} catch (InterruptedException e) {}
+        try {Thread.sleep(500);} catch (InterruptedException ignored) {}
     }
 
     private void setDriveMode(DcMotor.RunMode mode) {
@@ -406,7 +415,7 @@ public class ITDRobot {
         brDrive.setMode(mode);
     }
 
-    private void stop() {
+    private void brake() {
         flDrive.setPower(0.0);
         blDrive.setPower(0.0);
         frDrive.setPower(0.0);
