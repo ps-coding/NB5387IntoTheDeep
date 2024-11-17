@@ -15,7 +15,7 @@ public class ParkLeft extends LinearOpMode {
 
         waitForStart();
 
-        robot.driveToInches(5);
-        robot.tinyStrafe(-20);
+        robot.driveTo(130);
+        robot.strafeTo(-960);
     }
 }

@@ -20,19 +20,8 @@ public class Place extends LinearOpMode {
         // Go up to basket
         robot.driveToInches(12);
         robot.tinyStrafe(-15);
-        robot.turn(135);
+        robot.turnTo(135);
 
         // Extend
-        robot.barToggle();
-        robot.extensionToggle();
-        robot.be(700);
-        robot.extensionToggle();
-        robot.be(700);
-        robot.extensionToggle();
-        robot.be(700);
-        robot.clawToggle();
-        robot.be(700);
-        robot.barToggle();
-        robot.be(700);
     }
 }
