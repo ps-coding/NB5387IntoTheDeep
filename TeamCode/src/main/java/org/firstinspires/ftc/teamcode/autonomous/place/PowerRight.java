@@ -53,7 +53,7 @@ public class PowerRight extends LinearOpMode {
         robot.be(700);
 
         // Park
-        robot.driveTo(-270);
+        robot.driveTo(-210);
         robot.strafeTo(2000);
     }
 }
