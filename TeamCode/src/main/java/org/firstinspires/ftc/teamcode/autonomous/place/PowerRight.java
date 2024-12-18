@@ -52,8 +52,16 @@ public class PowerRight extends LinearOpMode {
         robot.armControl(0.3);
         robot.be(700);
 
+        // Stop arm up
+        robot.armControl(0.1);
+        robot.be();
+
         // Park
-        robot.driveTo(-210);
-        robot.strafeTo(2000);
+        robot.driveTo(-80);
+        robot.strafeTo(2400);
+
+        // Stop arm
+        robot.armControl(0.0);
+        robot.be();
     }
 }

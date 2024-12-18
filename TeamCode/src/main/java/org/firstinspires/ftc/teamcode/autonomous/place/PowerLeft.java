@@ -32,7 +32,7 @@ public class PowerLeft extends LinearOpMode {
 
         // Move to bar
         robot.strafeTo(1300);
-        robot.driveTo(340);
+        robot.driveTo(360);
 
         // Lower the arm to place specimen
         robot.armControl(-0.8);
@@ -63,7 +63,7 @@ public class PowerLeft extends LinearOpMode {
         // Align with sample
         robot.strafeTo(-1200);
         robot.turnTo(60);
-        robot.strafeTo(970);
+        robot.strafeTo(985);
 
         // Arm very low for intake
         robot.armControl(-0.6);
@@ -99,7 +99,7 @@ public class PowerLeft extends LinearOpMode {
         robot.be();
 
         // Move in front of basket
-        robot.driveTo(380, 1.7);
+        robot.driveTo(430, 1.7);
 
         // Claw spinning out
         robot.clawControl(1.0);
