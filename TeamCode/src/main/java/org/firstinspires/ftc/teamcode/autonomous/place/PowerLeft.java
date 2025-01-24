@@ -21,9 +21,9 @@ public class PowerLeft extends LinearOpMode {
         robot.driveTo(600);
 
         // Claw right for specimen, arm up, claw spinning in
-        robot.setClaw(ITDRobot.ClawTurnState.RIGHT);
+        robot.setIntakeTurn(ITDRobot.IntakeTurnState.RIGHT);
         robot.armControl(-1.0);
-        robot.clawControl(-1.0);
+        robot.intakeControl(-1.0);
         robot.be(950);
 
         // Stop arm from going further up
@@ -48,15 +48,15 @@ public class PowerLeft extends LinearOpMode {
         // Clear up holder
 
         // Claw spinning out, arm up
-        robot.clawControl(1.0);
+        robot.intakeControl(1.0);
         robot.armControl(0.3);
         robot.be(700);
 
         // High basket sample
 
         // Claw center, claw spinning in
-        robot.setClaw(ITDRobot.ClawTurnState.MIDDLE);
-        robot.clawControl(-1.0);
+        robot.setIntakeTurn(ITDRobot.IntakeTurnState.MIDDLE);
+        robot.intakeControl(-1.0);
         robot.armControl(0.1);
         robot.be(500);
 
@@ -102,7 +102,7 @@ public class PowerLeft extends LinearOpMode {
         robot.driveTo(430, 1.7);
 
         // Claw spinning out
-        robot.clawControl(1.0);
+        robot.intakeControl(1.0);
         robot.be(1000);
 
         // Reset to initial position
