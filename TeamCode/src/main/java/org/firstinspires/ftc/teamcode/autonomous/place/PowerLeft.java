@@ -15,6 +15,8 @@ public class PowerLeft extends LinearOpMode {
 
         waitForStart();
 
+        robot.sleep(2000);
+
         // High bar specimen
 
         // Drive a bit forward for clearance
@@ -61,7 +63,7 @@ public class PowerLeft extends LinearOpMode {
         robot.be(500);
 
         // Align with sample
-        robot.strafeTo(-1200);
+        robot.strafeTo(-1000);
         robot.turnTo(60);
         robot.strafeTo(985);
 
@@ -74,7 +76,7 @@ public class PowerLeft extends LinearOpMode {
         robot.be();
 
         // Move forward to intake
-        robot.driveTo(600);
+        robot.driveTo(700);
 
         // Raise arm
         robot.armControl(1.0);
@@ -88,7 +90,6 @@ public class PowerLeft extends LinearOpMode {
         robot.strafeTo(-300);
         robot.turnTo(70);
         robot.driveTo(325);
-        robot.strafeTo(-200);
 
         // Extend linear slide
         robot.linearSlideControl(-0.8);

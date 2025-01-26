@@ -114,7 +114,7 @@ public class ITDRobot {
         IMU.Parameters imuParameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT
                 )
         );
         imu = hardwareMap.get(BHI260IMU.class, "imu");
@@ -537,10 +537,10 @@ public class ITDRobot {
             frDrivePower = (double)frDistance / (double)Math.abs(pos);
             brDrivePower = (double)brDistance / (double)Math.abs(pos);
 
-            flDrivePower = (flDrivePower / 1.5) + (Math.signum(flDrivePower) * 0.1);
-            frDrivePower = (frDrivePower / 1.5) + (Math.signum(frDrivePower) * 0.1);
-            blDrivePower = (blDrivePower / 1.5) + (Math.signum(blDrivePower) * 0.1);
-            brDrivePower = (brDrivePower / 1.5) + (Math.signum(brDrivePower) * 0.1);
+            flDrivePower = (flDrivePower) + (Math.signum(flDrivePower) * 0.1);
+            frDrivePower = (frDrivePower) + (Math.signum(frDrivePower) * 0.1);
+            blDrivePower = (blDrivePower) + (Math.signum(blDrivePower) * 0.1);
+            brDrivePower = (brDrivePower) + (Math.signum(brDrivePower) * 0.1);
 
             // Slowdown
             flDrivePower = flDrivePower * driveSlowdown;

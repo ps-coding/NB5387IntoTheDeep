@@ -46,6 +46,7 @@ public class PowerRight extends LinearOpMode {
 
         // Drag specimen back
         robot.driveTo(-680);
+        robot.straighten();
 
         // Clear up holder
 
@@ -63,15 +64,14 @@ public class PowerRight extends LinearOpMode {
         robot.be();
 
         // Park
-        robot.driveTo(175);
-        robot.straighten();
-        robot.strafeTo(2200);
+        robot.driveTo(335);
+        robot.strafeTo(2300);
 
         // Stop arm
         robot.armControl(0.0);
         robot.be();
 
-        for (int i = 0; i < 2; i ++) {
+        for (int i = 0; i < 1; i ++) {
             // Extend horizontal slide
             robot.horizontalSlideControl(-1.0);
             robot.be();
@@ -97,10 +97,8 @@ public class PowerRight extends LinearOpMode {
             robot.initiatedReturnSequence = true;
 
             while (robot.initiatedReturnSequence) {
-                if (robot.horizontalSlide.getCurrentPosition() < -100) {
+                if (robot.horizontalSlide.getCurrentPosition() < -250) {
                     robot.horizontalSlideControl(1.0);
-                } else if (robot.horizontalSlide.getCurrentPosition() < -50) {
-                    robot.horizontalSlideControl(0.3);
                 } else {
                     robot.horizontalSlideControl(0.0);
                     robot.initiatedReturnSequence = false;
@@ -110,7 +108,8 @@ public class PowerRight extends LinearOpMode {
             }
 
             // Drop
-            robot.driveTo(-300);
+            robot.turnTo(85);
+            robot.turnTo(85);
             robot.setClawTurn(ITDRobot.ClawTurnState.OUT);
             robot.be(1000);
             robot.setClaw(ITDRobot.ClawState.OPEN);
@@ -119,9 +118,6 @@ public class PowerRight extends LinearOpMode {
             robot.setClaw(ITDRobot.ClawState.CLOSED);
             robot.setClawTurn(ITDRobot.ClawTurnState.IN);
             robot.be(800);
-
-            robot.strafeTo(250);
-            robot.driveTo(300);
         }
     }
 }
