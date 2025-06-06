@@ -4,132 +4,163 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ITDRobot;
-
-@Autonomous(name = "PowerRight", group = "Power")
-public class PowerRight extends LinearOpMode {
+//potato
+@Autonomous(name = "Right", group = "Standard")
+public class Right extends LinearOpMode {
     ITDRobot robot = new ITDRobot(telemetry);
 
     @Override
     public void runOpMode() {
+        // Init
         robot.init(hardwareMap);
-
         waitForStart();
 
         // High bar specimen
 
         // Drive a bit forward for clearance
-        robot.driveTo(600);
+        robot.driveTo(50);
 
         // Claw right for specimen, arm up, claw spinning in
         robot.setIntakeTurn(ITDRobot.IntakeTurnState.RIGHT);
         robot.armControl(-1.0);
         robot.intakeControl(-1.0);
-        robot.be(950);
+
+        // Keep going
+        robot.driveTo(760);
 
         // Stop arm from going further up
+        robot.armToFromHere(-2715);
         robot.armControl(0.05);
-        robot.be(100);
+        robot.be();
 
         // Move to bar
-        robot.driveAndStrafe(340, -400);
+        robot.driveAndStrafe(225, -400);
 
         // Lower the arm to place specimen
-        robot.armControl(-0.8);
-        robot.be(600);
+        robot.armControl(-0.7);
+        robot.be();
 
-        // Stop arm from lowering too far and breaking
-        robot.armControl(-0.1);
+        // Drag specimen back
+        robot.driveTo(-680);
+        robot.turnToFromHere(0);
+
+        // Claw spinning out, arm up
+        robot.intakeControl(1.0);
+        robot.armControl(0.5);
+        robot.be(500);
+
+        // Bring sample back
+
+        // Claw center, claw spinning in, arm up, slide out
+        robot.setIntakeTurn(ITDRobot.IntakeTurnState.MIDDLE);
+        robot.intakeControl(-1.0);
+        robot.be();
+
+        // Bring it back
+        robot.strafeTo(1615);
+        robot.turnToFromHere(0);
+        robot.driveTo(2000);
+        robot.strafeTo(340);
+        robot.turnToFromHere(0);
+        robot.armToFromHere(0);
+        robot.armControl(0.05);
+        robot.driveTo(-1800);
+
+        // Second high bar specimen
+
+        // Align with sample
+        robot.armControl(-0.7);
+        robot.be();
+        robot.driveAndStrafe(925, 150);
+        robot.turnToFromHere(172);
+        robot.resetGyro();
+
+        // Stop arm
+        robot.armControl(0.0);
+        robot.armToFromHere(-4500);
+        robot.armControl(0.0);
+        robot.be(1000);
+
+        // Move forward to intake
+        robot.driveTo(850, 3);
+
+        // Raise arm
+        robot.strafeTo(300);
+        robot.armControl(0.6);
+        robot.be(100);
+
+        robot.turnTo(172);
+
+        // Stop arm from raising too far and turn claw
+        robot.armToFromHere(-2600);
+        robot.armControl(0.0);
+        robot.setIntakeTurn(ITDRobot.IntakeTurnState.RIGHT);
+        robot.be(500);
+
+        // Go to bar
+        robot.driveAndStrafe(100, -1500);
+
+        // Lower the arm to place specimen
+        robot.armControl(-0.7);
         robot.be();
 
         // Drag specimen back
         robot.driveTo(-680);
 
-        // Clear up holder
-
         // Claw spinning out, arm up
         robot.intakeControl(1.0);
         robot.armControl(0.3);
-        robot.be(700);
-
-        // Second high bar specimen
-
-        // Claw center, claw spinning in
-        robot.setIntakeTurn(ITDRobot.IntakeTurnState.MIDDLE);
-        robot.intakeControl(-1.0);
-        robot.armControl(0.1);
-        robot.be(500);
-
-        // Align with sample
-        robot.driveAndStrafe(500, 700);
-        robot.turnToFromHere(-120);
-
-        // Arm very low for intake
-        robot.armControl(-0.6);
-        robot.be(300);
+        robot.be(1000);
 
         // Stop arm
         robot.armControl(0.0);
-        robot.be(1500);
-
-        // Move forward to intake
-        robot.driveTo(700);
-
-        // Raise arm
-        robot.armControl(1.0);
-        robot.be(850);
-
-        // Stop arm from raising too far
-        robot.armControl(0.0);
         robot.be();
 
+        // Park
+        robot.setIntakeTurn(ITDRobot.IntakeTurnState.LEFT);
+        robot.strafeTo(2100);
 
-//        for (int i = 0; i < 1; i ++) {
-//            // Extend horizontal slide
-//            robot.horizontalSlideControl(-1.0);
-//            robot.be();
+//        // Again
+//        robot.turnToFromHere(172);
+//        robot.resetGyro();
+//        robot.armControl(-0.7);
+//        robot.be(400);
 //
-//            while (robot.horizontalSlide.getCurrentPosition() > -1150) {
-//                robot.sleep(50);
-//            }
+//        // Stop arm
+//        robot.armControl(0.0);
+//        robot.be(400);
 //
-//            robot.horizontalSlideControl(0.0);
-//            robot.be();
+//        // Move forward to intake
+//        robot.driveTo(650, 3);
 //
-//            // Open
-//            robot.setClawTurn(ITDRobot.ClawTurnState.OUT);
-//            robot.setClaw(ITDRobot.ClawState.OPEN);
-//            robot.be(800);
+//        // Raise arm
+//        robot.armControl(0.6);
+//        robot.be();
 //
-//            // Close and return
-//            robot.setClaw(ITDRobot.ClawState.CLOSED);
-//            robot.be(1000);
-//            robot.setClawTurn(ITDRobot.ClawTurnState.IN);
-//            robot.be(800);
+//        robot.turnTo(172);
 //
-//            robot.initiatedReturnSequence = true;
+//        // Stop arm from raising too far and turn claw
+//        robot.armControl(0.0);
+//        robot.setIntakeTurn(ITDRobot.IntakeTurnState.RIGHT);
+//        robot.be();
 //
-//            while (robot.initiatedReturnSequence) {
-//                if (robot.horizontalSlide.getCurrentPosition() < -250) {
-//                    robot.horizontalSlideControl(1.0);
-//                } else {
-//                    robot.horizontalSlideControl(0.0);
-//                    robot.initiatedReturnSequence = false;
-//                }
+//        // Go to bar
+//        robot.driveAndStrafe(-250, -1450);
 //
-//                robot.be();
-//            }
+//        // Lower the arm to place specimen
+//        robot.armControl(-0.7);
+//        robot.be();
 //
-//            // Drop
-//            robot.turnTo(85);
-//            robot.turnTo(85);
-//            robot.setClawTurn(ITDRobot.ClawTurnState.OUT);
-//            robot.be(1000);
-//            robot.setClaw(ITDRobot.ClawState.OPEN);
-//            robot.be(800);
+//        // Drag specimen back
+//        robot.driveTo(-680);
 //
-//            robot.setClaw(ITDRobot.ClawState.CLOSED);
-//            robot.setClawTurn(ITDRobot.ClawTurnState.IN);
-//            robot.be(800);
-//        }
+//        // Claw spinning out, arm up
+//        robot.intakeControl(1.0);
+//        robot.armControl(0.3);
+//        robot.be(500);
+//
+//        // Stop arm
+//        robot.armControl(0.0);
+//        robot.be();
     }
 }
