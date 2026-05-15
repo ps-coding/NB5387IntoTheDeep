@@ -1,4 +1,4 @@
-# NB5387: Into The Deep
+# Team 5387: Into The Deep
 Competition codebase for Team 5387 TecHounds (Northern Burlington) for the INTO THE DEEP season.
 
 ## Project Structure
